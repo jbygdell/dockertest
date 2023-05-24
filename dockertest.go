@@ -125,7 +125,7 @@ func (r *Resource) Exec(cmd []string, opts ExecOptions) (exitCode int, err error
 		Tty:          opts.TTY,
 	})
 	if err != nil {
-		return -1, fmt.Errorf("Create exec failed: %w", err)
+		return -1, fmt.Errorf("create exec failed: %w", err)
 	}
 
 	// Always attach stderr/stdout, even if not specified, to ensure that exec
@@ -145,12 +145,12 @@ func (r *Resource) Exec(cmd []string, opts ExecOptions) (exitCode int, err error
 		Tty:          opts.TTY,
 	})
 	if err != nil {
-		return -1, fmt.Errorf("Start exec failed: %w", err)
+		return -1, fmt.Errorf("start exec failed: %w", err)
 	}
 
 	inspectExec, err := r.pool.Client.InspectExec(exec.ID)
 	if err != nil {
-		return -1, fmt.Errorf("Inspect exec failed: %w", err)
+		return -1, fmt.Errorf("inspect exec failed: %w", err)
 	}
 
 	return inspectExec.ExitCode, nil
@@ -177,18 +177,18 @@ func (r *Resource) ConnectToNetwork(network *Network) error {
 		dc.NetworkConnectionOptions{Container: r.Container.ID},
 	)
 	if err != nil {
-		return fmt.Errorf("Failed to connect container to network: %w", err)
+		return fmt.Errorf("failed to connect container to network: %w", err)
 	}
 
 	// refresh internal representation
 	r.Container, err = r.pool.Client.InspectContainer(r.Container.ID)
 	if err != nil {
-		return fmt.Errorf("Failed to refresh container information: %w", err)
+		return fmt.Errorf("failed to refresh container information: %w", err)
 	}
 
 	network.Network, err = r.pool.Client.NetworkInfo(network.Network.ID)
 	if err != nil {
-		return fmt.Errorf("Failed to refresh network information: %w", err)
+		return fmt.Errorf("failed to refresh network information: %w", err)
 	}
 
 	return nil
@@ -201,18 +201,18 @@ func (r *Resource) DisconnectFromNetwork(network *Network) error {
 		dc.NetworkConnectionOptions{Container: r.Container.ID},
 	)
 	if err != nil {
-		return fmt.Errorf("Failed to connect container to network: %w", err)
+		return fmt.Errorf("failed to connect container to network: %w", err)
 	}
 
 	// refresh internal representation
 	r.Container, err = r.pool.Client.InspectContainer(r.Container.ID)
 	if err != nil {
-		return fmt.Errorf("Failed to refresh container information: %w", err)
+		return fmt.Errorf("failed to refresh container information: %w", err)
 	}
 
 	network.Network, err = r.pool.Client.NetworkInfo(network.Network.ID)
 	if err != nil {
-		return fmt.Errorf("Failed to refresh network information: %w", err)
+		return fmt.Errorf("failed to refresh network information: %w", err)
 	}
 
 	return nil
@@ -228,6 +228,8 @@ func (r *Resource) Expire(seconds uint) error {
 	go func() {
 		if err := r.pool.Client.StopContainer(r.Container.ID, seconds); err != nil {
 			// Error handling?
+
+			return
 		}
 	}()
 	return nil
@@ -538,7 +540,7 @@ func (d *Pool) RemoveContainerByName(containerName string) error {
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("Error while listing containers with name %s: %w", containerName, err)
+		return fmt.Errorf("error while listing containers with name %s: %w", containerName, err)
 	}
 
 	if len(containers) == 0 {
@@ -551,7 +553,7 @@ func (d *Pool) RemoveContainerByName(containerName string) error {
 		RemoveVolumes: true,
 	})
 	if err != nil {
-		return fmt.Errorf("Error while removing container with name %s: %w", containerName, err)
+		return fmt.Errorf("error while removing container with name %s: %w", containerName, err)
 	}
 
 	return nil
@@ -591,7 +593,7 @@ func (d *Pool) CurrentContainer() (*Resource, error) {
 	// docker daemon puts short container id into hostname
 	hostname, err := os.Hostname()
 	if err != nil {
-		return nil, fmt.Errorf("Get hostname failed: %w", err)
+		return nil, fmt.Errorf("get hostname failed: %w", err)
 	}
 
 	container, err := d.Client.InspectContainer(hostname)

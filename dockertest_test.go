@@ -479,8 +479,8 @@ func TestExecStatus(t *testing.T) {
 		Tag:        "3.16",
 		Cmd:        []string{"tail", "-f", "/dev/null"},
 	})
-	defer resource.Close()
 	require.Nil(t, err)
+	defer resource.Close()
 	exitCode, err := resource.Exec([]string{"/bin/false"}, ExecOptions{})
 	require.Nil(t, err)
 	require.Equal(t, 1, exitCode)
